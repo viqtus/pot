@@ -91,7 +91,14 @@ var game =
 					context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
 					break;
 				case 'image':
-					context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
+					context.save();
+					var vx = game.scene[i].x + game.scene[i].w/2;
+					var vy = game.scene[i].y + game.scene[i].h/2;
+					context.translate(vx, vy);
+					context.rotate(game.scene[i].angle * Math.PI/180);
+					context.translate(-vx, -vy);
+					context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
+					context.restore();
 					break;
 				case 'text':
 					context.fillStyle = game.scene[i].color;
@@ -118,6 +125,34 @@ var game =
 			load: false,
 			resize: false
 		}
+	},
+
+	hero:
+	{
+		agility: 1,
+		armor: 1,
+		attributes: 1,
+		damage: 1,
+		dodge: 1,
+		experience: 0,
+		fortune: 1,
+		health: 1,
+		intelligence: 1,
+		level: 1,
+		mana: 1,
+		regen:
+		{
+			hp: 1,
+			mp: 1,
+			sp: 1
+		},
+		speed:
+		{
+			attack: 1,
+			move: 1
+		},
+		stamina: 1,
+		strength: 1
 	},
 
 	images:
@@ -151,7 +186,7 @@ var game =
 		volume: 1
 	},
 
-	paint: function(image, x, y)
+	paint: function(image, x, y, w, h, angle)
 	{
 		var paint =
 		{
@@ -160,6 +195,9 @@ var game =
 			x: x,
 			y: y
 		};
+		paint.angle = (angle) ? (angle) : 0;
+		paint.h = (h) ? h : image.height;
+		paint.w = (w) ? w : image.width;
 		game.scene.push(paint);
 	},
 
@@ -173,6 +211,7 @@ var game =
 	preloading: function()
 	{
 		window.document.body.appendChild(canvas);
+		canvas.preserveAspectRatio = 'none';
 		canvas.resize(true);
 	},
 
@@ -230,13 +269,11 @@ var game =
 	update: function()
 	{
 		canvas.resize();
-		game.paint(game.images.pot, 100, 100);
-		game.print('Hello', 100, 132, 'left', 16, '#638');
-		//game.play(game.sounds.click);
+		game.paint(game.images.compass, 100, 100, 100, 100);
 
-		game.animate(game.animations.coin, 200, 200, 80);
-
-		game.print('300', 200, 212, 'right', 14, 'orange');
+		var text = '5300';
+		game.animate(game.animations.coin, canvas.width/2 + text.length*game.options.font.size/3, 8, 80);
+		game.print(text, canvas.width/2, 20, 'center', game.options.font.size, 'orange');
 	}
 };
 
