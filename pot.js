@@ -5,6 +5,7 @@ var canvas = window.document.createElement('canvas');
 	{
 		if((game.event.window.resize) || (resize))
 		{
+			game.buffer = [];
 			canvas.height = window.innerHeight;
 			canvas.width = window.innerWidth;
 		};
@@ -33,11 +34,13 @@ var game =
 			animation.time = 0;
 		};
 
-		if(game.event.tick)
+		if(game.event.tock)
 		{
 			animation.time += game.options.interval;
 		};
-		animate.image = animation.images[animate.frame];
+
+		animate.image = animation.images[animate.frame].image;
+		animate.name = animate.image.name;
 
 		game.scene.push(animate);
 	},
@@ -53,11 +56,16 @@ var game =
 			animation.images = [];
 			for(var i = 0; i < images.length; i++)
 			{
-				animation.images.push(game.images[images[i]]);
+				var image = {};
+					image.image = game.images[images[i]];
+					image.name = game.images[images[i]].constructor.name;
+				animation.images.push(image);
 			};
 			game.animations[id] = animation;
 		}
 	},
+
+	buffer: [],
 
 	data:
 	{
@@ -66,6 +74,11 @@ var game =
 			mouse:
 			{
 				down:
+				{
+					x: undefined,
+					y: undefined
+				},
+				move:
 				{
 					x: undefined,
 					y: undefined
@@ -81,35 +94,47 @@ var game =
 
 	draw: function()
 	{
-		context.beginPath();
-		context.clearRect(0, 0, canvas.width, canvas.height);
-		for(var i = 0; i < game.scene.length; i++)
+		if(game.event.tick)
 		{
-			switch(game.scene[i].type)
+			context.beginPath();
+			for(var i = 0; i < game.scene.length; i++)
 			{
-				case 'animate':
-					context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
-					break;
-				case 'image':
-					context.save();
-					var vx = game.scene[i].x + game.scene[i].w/2;
-					var vy = game.scene[i].y + game.scene[i].h/2;
-					context.translate(vx, vy);
-					context.rotate(game.scene[i].angle * Math.PI/180);
-					context.translate(-vx, -vy);
-					context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
-					context.restore();
-					break;
-				case 'text':
-					context.fillStyle = game.scene[i].color;
-					context.font = game.scene[i].size + 'px ' + game.scene[i].family;
-					context.textAlign = game.scene[i].align;
-					context.fillText(game.scene[i].text, game.scene[i].x, game.scene[i].y);
-					break;
+				var scene = (game.scene[i].name) ? game.scene[i].name : '_';
+				var buffer = (game.buffer[i]) ? game.buffer[i].name : ' ';
+				if(scene != buffer)
+				{
+					game.draws++;
+					switch(game.scene[i].type)
+					{
+						case 'animate':
+							context.clearRect(game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
+							context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
+							break;
+						case 'image':
+							context.clearRect(game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
+							context.save();
+							var vx = game.scene[i].x + game.scene[i].w/2;
+							var vy = game.scene[i].y + game.scene[i].h/2;
+							context.translate(vx, vy);
+							context.rotate(game.scene[i].angle * Math.PI/180);
+							context.translate(-vx, -vy);
+							context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
+							context.restore();
+							break;
+						case 'text':
+							context.clearRect(game.scene[i].x + game.scene[i].vx, game.scene[i].y + game.scene[i].vy, game.scene[i].w, game.scene[i].h);
+							context.fillStyle = game.scene[i].color;
+							context.font = game.scene[i].size + 'px ' + game.scene[i].family;
+							context.textAlign = game.scene[i].align;
+							context.fillText(game.scene[i].text, game.scene[i].x, game.scene[i].y);
+							break;
+					};
+				};
 			};
+			game.buffer = game.scene;
+			game.scene = [];
+			context.closePath();
 		};
-		game.scene = [];
-		context.closePath();
 	},
 
 	event:
@@ -117,9 +142,27 @@ var game =
 		mouse:
 		{
 			down: false,
+			move: false,
 			up: false
 		},
 		tick: false,
+		get tock()
+		{
+			var tock = false;
+			if(game.event.tick == true)
+			{
+				if(
+					(game.event.mouse.down == false) &&
+					(game.event.mouse.up == false) &&
+					(game.event.window.load == false) &&
+					(game.event.window.resize == false)
+				)
+				{
+					tock = true;
+				};
+			};
+			return tock;
+		},
 		window:
 		{
 			load: false,
@@ -197,6 +240,7 @@ var game =
 		};
 		paint.angle = (angle) ? (angle) : 0;
 		paint.h = (h) ? h : image.height;
+		paint.name = image.constructor.name;
 		paint.w = (w) ? w : image.width;
 		game.scene.push(paint);
 	},
@@ -225,9 +269,31 @@ var game =
 			y: y
 		};
 		print.align = (align) ? align : game.options.font.align;
-		print.family = (family) ? family : game.options.font.family;
 		print.color = (color) ? color : game.options.font.color;
+		print.family = (family) ? family : game.options.font.family;
+		print.name = undefined;
 		print.size = (size) ? size : game.options.font.size;
+		switch(print.align)
+		{
+			case 'center':
+				print.vx = -print.size * print.text.length/2;
+				print.vy = -print.size;
+				break;
+			case 'left':
+				print.vx = 0;
+				print.vy = -print.size;
+				break;
+			case 'right':
+				print.vx = -print.size*print.text.length;
+				print.vy = -print.size;
+				break;
+			default:
+				print.vx = 0;
+				print.vy = -print.size;
+				break;
+		};
+		print.h = print.size;
+		print.w = print.size * text.length;
 		game.scene.push(print);
 	},
 
@@ -269,11 +335,14 @@ var game =
 	update: function()
 	{
 		canvas.resize();
-		game.paint(game.images.compass, 100, 100, 100, 100);
+		if(game.event.tick)
+		{
+			game.paint(game.images.compass, 100, 100, 100, 100);
 
-		var text = '5300';
-		game.animate(game.animations.coin, canvas.width/2 + text.length*game.options.font.size/3, 8, 80);
-		game.print(text, canvas.width/2, 20, 'center', game.options.font.size, 'orange');
+			var text = '5300';
+			game.animate(game.animations.coin, canvas.width/2, 8, 80);
+			game.print(text, canvas.width/2, 20, 'right', game.options.font.size, 'orange');
+		};
 	}
 };
 
@@ -294,6 +363,16 @@ window.onmousedown = function()
 	game.update();
 	game.draw();
 	game.event.mouse.down = false;
+};
+
+window.onmousemove = function()
+{
+	game.data.event.mouse.move.x = event.x;
+	game.data.event.mouse.move.y = event.y;
+	game.event.mouse.move = true;
+	game.update();
+	game.draw();
+	game.event.mouse.move = false;
 };
 
 window.onmouseup = function()
