@@ -339,6 +339,34 @@ var game =
 		{
 			active: function()
 			{
+				window.console.log('press hammer');
+			},
+			image:
+			{
+				default: game.images.button_hammer,
+				pressed: game.images.button_hammer_pressed
+			},
+			name: 'hammer'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
+				window.console.log('press perks');
+			},
+			image:
+			{
+				default: game.images.button_perks,
+				pressed: game.images.button_perks_pressed
+			},
+			name: 'perks'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
 				window.console.log('press sword');
 			},
 			image:
@@ -501,7 +529,11 @@ var game =
 
 		game.buttons.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
+		game.buttons.hammer.show(game.data.canvas.w2 - game.data.canvas.s4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
 		game.buttons.sword.show(game.data.canvas.w2 - game.data.canvas.s4 + game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+		game.buttons.perks.show(game.data.canvas.w2 + game.data.canvas.s4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 		if(game.event.tick)
 		{
