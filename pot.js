@@ -339,14 +339,14 @@ var game =
 		{
 			active: function()
 			{
-				window.console.log('press hammer');
+				window.console.log('press diamond');
 			},
 			image:
 			{
-				default: game.images.button_hammer,
-				pressed: game.images.button_hammer_pressed
+				default: game.images.button_diamond,
+				pressed: game.images.button_diamond_pressed
 			},
-			name: 'hammer'
+			name: 'diamond'
 		};
 
 		game.button.create =
@@ -529,9 +529,9 @@ var game =
 
 		game.buttons.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.buttons.hammer.show(game.data.canvas.w2 - game.data.canvas.s4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+		game.buttons.diamond.show(game.data.canvas.w2 - game.data.canvas.s4 + game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.buttons.sword.show(game.data.canvas.w2 - game.data.canvas.s4 + game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+		game.buttons.sword.show(game.data.canvas.w2 - game.data.canvas.s4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 		game.buttons.perks.show(game.data.canvas.w2 + game.data.canvas.s4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
