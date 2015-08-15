@@ -6,8 +6,9 @@ var canvas = window.document.createElement('canvas');
 		if((game.event.window.resize) || (resize))
 		{
 			game.buffer = [];
-			canvas.height = window.innerHeight;
-			canvas.width = window.innerWidth;
+			game.set.data.canvas();
+			canvas.height = game.data.canvas.h1;
+			canvas.width = game.data.canvas.w1;
 		};
 	};
 var context = canvas.getContext('2d');
@@ -69,6 +70,30 @@ var game =
 
 	data:
 	{
+		canvas:
+		{
+			h1: undefined,
+			h2: undefined,
+			h4: undefined,
+			h8: undefined,
+			h16: undefined,
+			h32: undefined,
+			h64: undefined,
+			s1: undefined,
+			s2: undefined,
+			s4: undefined,
+			s8: undefined,
+			s16: undefined,
+			s32: undefined,
+			s64: undefined,
+			w1: undefined,
+			w2: undefined,
+			w4: undefined,
+			w8: undefined,
+			w16: undefined,
+			w32: undefined,
+			w64: undefined,
+		},
 		event:
 		{
 			mouse:
@@ -256,14 +281,13 @@ var game =
 	{
 		window.document.body.appendChild(canvas);
 		canvas.preserveAspectRatio = 'none';
-		canvas.resize(true);
 	},
 
 	print: function(text, x, y, align, size, color, family)
 	{
 		var print =
 		{
-			text: text,
+			text: text.toString(),
 			type: 'text',
 			x: x,
 			y: y
@@ -293,7 +317,7 @@ var game =
 				break;
 		};
 		print.h = print.size;
-		print.w = print.size * text.length;
+		print.w = print.size * print.text.length;
 		game.scene.push(print);
 	},
 
@@ -301,6 +325,32 @@ var game =
 
 	set:
 	{
+		data:
+		{
+			canvas: function()
+			{
+				var h = window.innerHeight;
+				var w = window.innerWidth;
+				for(var i = 0; i < 7; i++)
+				{
+					var n = Math.pow(2, i);
+					game.data.canvas['h' + n] = Math.round(h/n);
+					game.data.canvas['w' + n] = Math.round(w/n);
+					game.data.canvas['s' + n] = (h < w) ? game.data.canvas['h' + n] : game.data.canvas['w' + n];
+				};
+				window.console.log(game.data.canvas);
+			}
+		},
+		font:
+		{
+			size: function()
+			{
+				if((game.event.window.resize)||(game.event.window.load))
+				{
+					game.options.font.size = game.data.canvas.h32;
+				};
+			}
+		},
 		icon: function(image)
 		{
 			var icon = window.document.getElementById('ICON');
@@ -335,13 +385,13 @@ var game =
 	update: function()
 	{
 		canvas.resize();
+		game.set.font.size();
 		if(game.event.tick)
 		{
-			game.paint(game.images.compass, 100, 100, 100, 100);
+			game.paint(game.images.pointer, game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-			var text = '5300';
-			game.animate(game.animations.coin, canvas.width/2, 8, 80);
-			game.print(text, canvas.width/2, 20, 'right', game.options.font.size, 'orange');
+			game.animate(game.animations.coin, game.data.canvas.w2, game.data.canvas.h64, 80);
+			game.print(game.data.canvas.h1, game.data.canvas.w2, game.data.canvas.h32, 'right', game.data.canvas.h32, 'orange');
 		};
 	}
 };
