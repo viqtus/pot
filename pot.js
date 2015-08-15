@@ -311,7 +311,7 @@ var game =
 		{
 			active: function()
 			{
-				window.console.log('press');
+				window.console.log('press compass');
 			},
 			image:
 			{
@@ -319,6 +319,20 @@ var game =
 				pressed: game.images.button_compass_pressed
 			},
 			name: 'compass'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
+				window.console.log('press sword');
+			},
+			image:
+			{
+				default: game.images.button_sword,
+				pressed: game.images.button_sword_pressed
+			},
+			name: 'sword'
 		};
 	},
 
@@ -470,6 +484,8 @@ var game =
 		game.set.font.size();
 
 		game.buttons.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+		game.buttons.sword.show(game.data.canvas.w2 - game.data.canvas.s4 + game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 		if(game.event.tick)
 		{
