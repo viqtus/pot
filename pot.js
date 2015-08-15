@@ -68,6 +68,46 @@ var game =
 
 	buffer: [],
 
+	button:
+	{
+		set create(object)
+		{
+			var button =
+			{
+				image: object.image.default,
+				name: object.name,
+				pressed: false
+			};
+			button.show = function(x, y, w, h)
+			{
+				button.h = h;
+				button.w = w;
+				button.x = x;
+				button.y = y;
+
+				if(game.event.mouse.down)
+				{
+					button.pressed = true;
+				};
+
+				if(game.event.mouse.up)
+				{
+					button.pressed = false;
+				};
+
+				if(game.event.tick)
+				{
+					button.image = (button.pressed) ? object.image.pressed : object.image.default;
+					game.paint(button.image, x, y, w, h);
+					canvas.resize(true);
+				};
+			};
+			game.buttons[button.name] = button;
+		}
+	},
+
+	buttons: [],
+
 	data:
 	{
 		canvas:
@@ -98,6 +138,11 @@ var game =
 		{
 			mouse:
 			{
+				click:
+				{
+					x: undefined,
+					y: undefined
+				},
 				down:
 				{
 					x: undefined,
@@ -136,7 +181,10 @@ var game =
 							context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
 							break;
 						case 'image':
-							context.clearRect(game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
+							if(game.scene[i].clear)
+							{
+								context.clearRect(game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
+							};
 							context.save();
 							var vx = game.scene[i].x + game.scene[i].w/2;
 							var vy = game.scene[i].y + game.scene[i].h/2;
@@ -166,6 +214,7 @@ var game =
 	{
 		mouse:
 		{
+			click: false,
 			down: false,
 			move: false,
 			up: false
@@ -237,6 +286,16 @@ var game =
 	{
 		canvas.resize(true);
 		game.set.icon(game.images.pot);
+
+		game.button.create =
+		{
+			image:
+			{
+				default: game.images.button_compass,
+				pressed: game.images.button_compass_pressed
+			},
+			name: 'compass'
+		};
 	},
 
 	mode: 'play',
@@ -254,7 +313,7 @@ var game =
 		volume: 1
 	},
 
-	paint: function(image, x, y, w, h, angle)
+	paint: function(image, x, y, w, h, clear, angle)
 	{
 		var paint =
 		{
@@ -263,7 +322,8 @@ var game =
 			x: x,
 			y: y
 		};
-		paint.angle = (angle) ? (angle) : 0;
+		paint.angle = (angle) ? angle : 0;
+		paint.clear = clear;
 		paint.h = (h) ? h : image.height;
 		paint.name = image.constructor.name;
 		paint.w = (w) ? w : image.width;
@@ -280,7 +340,6 @@ var game =
 	preloading: function()
 	{
 		window.document.body.appendChild(canvas);
-		canvas.preserveAspectRatio = 'none';
 	},
 
 	print: function(text, x, y, align, size, color, family)
@@ -338,7 +397,6 @@ var game =
 					game.data.canvas['w' + n] = Math.round(w/n);
 					game.data.canvas['s' + n] = (h < w) ? game.data.canvas['h' + n] : game.data.canvas['w' + n];
 				};
-				window.console.log(game.data.canvas);
 			}
 		},
 		font:
@@ -386,14 +444,25 @@ var game =
 	{
 		canvas.resize();
 		game.set.font.size();
+
+		game.buttons.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
 		if(game.event.tick)
 		{
-			game.paint(game.images.pointer, game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
 			game.animate(game.animations.coin, game.data.canvas.w2, game.data.canvas.h64, 80);
 			game.print(game.data.canvas.h1, game.data.canvas.w2, game.data.canvas.h32, 'right', game.data.canvas.h32, 'orange');
 		};
 	}
+};
+
+window.onclick = function()
+{
+	game.data.event.mouse.click.x = event.x;
+	game.data.event.mouse.click.y = event.y;
+	game.event.mouse.click = true;
+	game.update();
+	game.draw();
+	game.event.mouse.click = false;
 };
 
 window.onload = function()
