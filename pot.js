@@ -74,6 +74,7 @@ var game =
 		{
 			var button =
 			{
+				active: object.active,
 				image: object.image.default,
 				name: object.name,
 				pressed: false
@@ -88,6 +89,8 @@ var game =
 				if((game.event.mouse.down) && (game.event.mouse.over(button)))
 				{
 					button.pressed = true;
+					button.active();
+					game.play(game.sounds.tap);
 				};
 
 				if(game.event.mouse.up)
@@ -306,6 +309,10 @@ var game =
 
 		game.button.create =
 		{
+			active: function()
+			{
+				window.console.log('press');
+			},
 			image:
 			{
 				default: game.images.button_compass,
