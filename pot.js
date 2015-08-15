@@ -311,6 +311,20 @@ var game =
 		{
 			active: function()
 			{
+				window.console.log('press chest');
+			},
+			image:
+			{
+				default: game.images.button_chest,
+				pressed: game.images.button_chest_pressed
+			},
+			name: 'chest'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
 				window.console.log('press compass');
 			},
 			image:
@@ -482,6 +496,8 @@ var game =
 	{
 		canvas.resize();
 		game.set.font.size();
+
+		game.buttons.chest.show(game.data.canvas.w2 + game.data.canvas.s8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 		game.buttons.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 

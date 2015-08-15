@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64 64.000002"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="button_chest_pressed.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient4186"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#3d748b;stop-opacity:1;"
+         offset="0"
+         id="stop4188" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="31.263457"
+     inkscape:cy="36.221067"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer4"
+     showgrid="true"
+     units="px"
+     inkscape:showpageshadow="false"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:object-nodes="true"
+     inkscape:window-width="1024"
+     inkscape:window-height="745"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3336"
+       spacingx="2"
+       spacingy="2.0000001"
+       empspacing="1" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-988.3622)">
+    <rect
+       ry="8.0000162"
+       rx="0"
+       y="996.36218"
+       x="4"
+       height="52.000019"
+       width="56"
+       id="rect3365-0"
+       style="fill:#8b713d;fill-opacity:1" />
+    <rect
+       ry="8.0000162"
+       rx="0"
+       y="996.36218"
+       x="4"
+       height="52.000019"
+       width="56"
+       id="rect3365"
+       style="fill:#e8b844;fill-opacity:1" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Layer 3">
+    <g
+       id="g4180"
+       transform="translate(0,3.9999994)">
+      <path
+         id="rect4154"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 50,26 4,0 0,26 -4,0 z m -40,0 4,0 0,26 -4,0 z m 0,22 44,0 0,4 -44,0 z m 20,-14 4,0 0,4 -4,0 z m 4,-4 4,0 0,8 -4,0 z m -8,0 4,0 0,8 -4,0 z M 10.000016,7.99998 l 43.999968,0 c 9e-6,0 1.6e-5,1e-5 1.6e-5,2e-5 l 0,4 c 0,0 -7e-6,0 -1.6e-5,0 L 10.000016,12 C 10.000007,12 10,12 10,12 l 0,-4 c 0,-10e-6 7e-6,-2e-5 1.6e-5,-2e-5 z M 10,12 l 4,0 0,8 -4,0 z m 40,0 4,0 0,8 -4,0 z m -40,8 44,0 0,4 -44,0 z m 4,6 36,0 0,4 -36,0 z"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+</svg>
