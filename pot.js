@@ -85,7 +85,7 @@ var game =
 				button.x = x;
 				button.y = y;
 
-				if(game.event.mouse.down)
+				if((game.event.mouse.down) && (game.event.mouse.over(button)))
 				{
 					button.pressed = true;
 				};
@@ -99,7 +99,6 @@ var game =
 				{
 					button.image = (button.pressed) ? object.image.pressed : object.image.default;
 					game.paint(button.image, x, y, w, h);
-					canvas.resize(true);
 				};
 			};
 			game.buttons[button.name] = button;
@@ -166,6 +165,7 @@ var game =
 	{
 		if(game.event.tick)
 		{
+			canvas.resize(true);
 			context.beginPath();
 			for(var i = 0; i < game.scene.length; i++)
 			{
@@ -217,6 +217,23 @@ var game =
 			click: false,
 			down: false,
 			move: false,
+			over: function(object)
+			{
+				if
+				(
+					(game.data.event.mouse.move.x > object.x) &&
+					(game.data.event.mouse.move.x < object.x + object.w) &&
+					(game.data.event.mouse.move.y > object.y) &&
+					(game.data.event.mouse.move.y < object.y + object.h)
+				)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				};
+			},
 			up: false
 		},
 		tick: false,
