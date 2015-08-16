@@ -184,7 +184,6 @@ var game =
 					switch(game.scene[i].type)
 					{
 						case 'animate':
-							context.clearRect(game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
 							context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
 							break;
 						case 'image':
@@ -202,7 +201,10 @@ var game =
 							context.restore();
 							break;
 						case 'text':
-							context.clearRect(game.scene[i].x + game.scene[i].vx, game.scene[i].y + game.scene[i].vy, game.scene[i].w, game.scene[i].h);
+							if(game.scene[i].clear)
+							{
+								context.clearRect(game.scene[i].x + game.scene[i].vx, game.scene[i].y + game.scene[i].vy, game.scene[i].w, game.scene[i].h);
+							};
 							context.fillStyle = game.scene[i].color;
 							context.font = game.scene[i].size + 'px ' + game.scene[i].family;
 							context.textAlign = game.scene[i].align;
@@ -273,22 +275,27 @@ var game =
 	{
 		hp:
 		{
-			current: 100,
+			current: 90,
 			max: 100
 		},
 		mp:
 		{
-			current: 100,
+			current: 60,
 			max: 100
+		},
+		position:
+		{
+			x: 0,
+			y: 0
 		},
 		sp:
 		{
-			current: 100,
+			current: 80,
 			max: 100
 		},
 		xp:
 		{
-			current: 0,
+			current: 20,
 			max: 100
 		}
 	},
@@ -368,6 +375,20 @@ var game =
 		{
 			active: function()
 			{
+				window.console.log('press settings');
+			},
+			image:
+			{
+				default: game.images.settings,
+				pressed: game.images.settings
+			},
+			name: 'settings'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
 				window.console.log('press sword');
 			},
 			image:
@@ -380,12 +401,46 @@ var game =
 
 		game.progress.create =
 		{
+			color: '#e8446b',
 			image:
 			{
-				background: game.images.progress_bar_background,
-				bar: game.images.progress_bar_red
+				background: game.images.transparent,
+				bar: game.images.progress_bar_red,
 			},
 			name: 'hp'
+		};
+
+		game.progress.create =
+		{
+			color: '#44b8e8',
+			image:
+			{
+				background: game.images.transparent,
+				bar: game.images.progress_bar_blue
+			},
+			name: 'mp'
+		};
+
+		game.progress.create =
+		{
+			color: '#44e8a5',
+			image:
+			{
+				background: game.images.transparent,
+				bar: game.images.progress_bar_green
+			},
+			name: 'sp'
+		};
+
+		game.progress.create =
+		{
+			color: '#e8b844',
+			image:
+			{
+				background: game.images.transparent,
+				bar: game.images.progress_bar_yellow
+			},
+			name: 'xp'
 		};
 	},
 
@@ -397,10 +452,10 @@ var game =
 		{
 			align: 'left',
 			color: 'black',
-			family: 'Arial',
+			family: 'monospace',
 			size: 12
 		},
-		interval: 80,
+		interval: 100,
 		volume: 1
 	},
 
@@ -434,10 +489,11 @@ var game =
 		window.document.body.appendChild(canvas);
 	},
 
-	print: function(text, x, y, align, size, color, family)
+	print: function(text, x, y, align, size, color, family, clear)
 	{
 		var print =
 		{
+			clear: clear,
 			text: text.toString(),
 			type: 'text',
 			x: x,
@@ -452,19 +508,19 @@ var game =
 		{
 			case 'center':
 				print.vx = -print.size * print.text.length/2;
-				print.vy = -print.size;
+				print.vy = -print.size/2;
 				break;
 			case 'left':
 				print.vx = 0;
-				print.vy = -print.size;
+				print.vy = -print.size/2;
 				break;
 			case 'right':
 				print.vx = -print.size*print.text.length;
-				print.vy = -print.size;
+				print.vy = -print.size/2;
 				break;
 			default:
 				print.vx = 0;
-				print.vy = -print.size;
+				print.vy = -print.size/2;
 				break;
 		};
 		print.h = print.size;
@@ -479,6 +535,7 @@ var game =
 			var progress =
 			{
 				background: object.image.background,
+				color: object.color,
 				image: object.image.bar,
 				name: object.name,
 				pressed: false
@@ -495,6 +552,7 @@ var game =
 					var percent = current/max;
 					game.paint(progress.background, x, y, w, h);
 					game.paint(progress.image, x, y, percent * w, h);
+					game.print(current + '/' + max, x + percent * w + game.data.canvas.w64/2, y + game.data.canvas.h64/2, 'right', game.data.canvas.h64, progress.color, undefined, true);
 				};
 			};
 			game.progress[progress.name] = progress;
@@ -572,17 +630,19 @@ var game =
 
 		game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
+		game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s32 - game.data.canvas.s64, game.data.canvas.h64, game.data.canvas.s32, game.data.canvas.s32);
+
 		game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 		game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+		game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
 
-		if(game.event.tick)
-		{
-			game.animate(game.animations.coin, game.data.canvas.w1 - game.data.canvas.w32 + game.data.canvas.w64/2, game.data.canvas.h64, 80, game.data.canvas.h32, game.data.canvas.h32);
-			game.print(game.data.canvas.h1, game.data.canvas.w1 - game.data.canvas.w32, game.data.canvas.h32, 'right', game.data.canvas.h32, '#e8b844');
-		};
+		game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+		game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+		game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
 	}
 };
 

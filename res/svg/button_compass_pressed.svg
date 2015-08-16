@@ -36,7 +36,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.0710678"
-     inkscape:cx="33.821037"
+     inkscape:cx="12.749255"
      inkscape:cy="30.301685"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
@@ -66,7 +66,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -98,19 +98,15 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Layer 3">
-    <g
-       id="g4258"
-       transform="translate(0,4.0000005)">
-      <path
-         inkscape:connector-curvature="0"
-         id="path4240"
-         d="M 26,31.999999 C 32,54 32,54 32,54 l 6,-22.000001 z"
-         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path4240-3"
-         d="M 26,27.999999 C 32,5.9999983 32,5.9999983 32,5.9999983 l 6,22.0000007 z"
-         style="fill:#d45867;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    </g>
+    <path
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 26,36 c 6,22 6,22 6,22 l 6,-22 z"
+       id="path4240"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#d45875;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 26,31.999999 C 32,9.9999988 32,9.9999988 32,9.9999988 L 38,32 Z"
+       id="path4240-3"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

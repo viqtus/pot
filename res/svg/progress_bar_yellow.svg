@@ -16,7 +16,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="button_compass.svg">
+   sodipodi:docname="progress_bar_yellow.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -35,11 +35,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.5"
-     inkscape:cx="-28.323233"
-     inkscape:cy="50.814301"
+     inkscape:zoom="4"
+     inkscape:cx="-8.125"
+     inkscape:cy="26.765228"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:showpageshadow="false"
@@ -66,7 +66,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -76,37 +76,15 @@
      id="layer1"
      transform="translate(0,-988.3622)">
     <rect
-       ry="8.0000162"
-       rx="0"
-       y="996.36218"
-       x="4"
-       height="52.000019"
-       width="56"
-       id="rect3365-0"
-       style="fill:#3d748b;fill-opacity:1" />
-    <rect
-       ry="8.0000162"
-       rx="0"
-       y="992.36218"
-       x="4"
-       height="52.000019"
-       width="56"
+       y="988.36218"
+       x="7.9936058e-015"
+       height="64"
+       width="64"
        id="rect3365"
-       style="fill:#44b8e8;fill-opacity:1" />
+       style="fill:#e8b844;fill-opacity:1" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="Layer 3">
-    <path
-       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
-       d="M 26,31.999999 C 32,54 32,54 32,54 l 6,-22.000001 z"
-       id="path4240"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#d45875;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 26,27.999999 C 32,5.9999983 32,5.9999983 32,5.9999983 l 6,22.0000007 z"
-       id="path4240-3"
-       inkscape:connector-curvature="0" />
-  </g>
+     inkscape:label="Layer 3" />
 </svg>
