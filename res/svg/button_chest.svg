@@ -35,11 +35,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="41.988914"
-     inkscape:cy="31.60862"
+     inkscape:zoom="2"
+     inkscape:cx="59.250001"
+     inkscape:cy="18.499999"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:showpageshadow="false"
@@ -99,13 +99,15 @@
      id="layer4"
      inkscape:label="Layer 3">
     <g
-       id="g4744">
-      <g
-         id="g4735" />
+       id="g4735" />
+    <g
+       id="g4162"
+       transform="translate(0,1.9999997)">
       <path
          id="rect4733"
          style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 30,26 4,0 0,4 -4,0 z m -2,6 8,0 0,20 -8,0 z m -18,-6 18,0 0,26 -18,0 z m 26,0 18,0 0,26 -18,0 z M 10,7.999999 l 44,0 0,16 -44,0 z" />
+         d="m 14,11.999999 36,0 0,12 -36,0 z M 36,26 l 14,0 0,20 -14,0 z m -22,0 14,0 0,20 -14,0 z m 14,6 8,0 0,14 -8,0 z m 2,-6 4,0 0,4 -4,0 z"
+         inkscape:connector-curvature="0" />
     </g>
   </g>
 </svg>

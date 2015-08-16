@@ -110,11 +110,9 @@ var game =
 					game.paint(button.image, x, y, w, h);
 				};
 			};
-			game.buttons[button.name] = button;
+			game.button[button.name] = button;
 		}
 	},
-
-	buttons: [],
 
 	data:
 	{
@@ -273,30 +271,26 @@ var game =
 
 	hero:
 	{
-		agility: 1,
-		armor: 1,
-		attributes: 1,
-		damage: 1,
-		dodge: 1,
-		experience: 0,
-		fortune: 1,
-		health: 1,
-		intelligence: 1,
-		level: 1,
-		mana: 1,
-		regen:
+		hp:
 		{
-			hp: 1,
-			mp: 1,
-			sp: 1
+			current: 100,
+			max: 100
 		},
-		speed:
+		mp:
 		{
-			attack: 1,
-			move: 1
+			current: 100,
+			max: 100
 		},
-		stamina: 1,
-		strength: 1
+		sp:
+		{
+			current: 100,
+			max: 100
+		},
+		xp:
+		{
+			current: 0,
+			max: 100
+		}
 	},
 
 	images:
@@ -383,6 +377,16 @@ var game =
 			},
 			name: 'sword'
 		};
+
+		game.progress.create =
+		{
+			image:
+			{
+				background: game.images.progress_bar_background,
+				bar: game.images.progress_bar_red
+			},
+			name: 'hp'
+		};
 	},
 
 	mode: 'play',
@@ -468,6 +472,35 @@ var game =
 		game.scene.push(print);
 	},
 
+	progress:
+	{
+		set create(object)
+		{
+			var progress =
+			{
+				background: object.image.background,
+				image: object.image.bar,
+				name: object.name,
+				pressed: false
+			};
+			progress.show = function(current, max, x, y, w, h)
+			{
+				progress.h = h;
+				progress.x = x;
+				progress.y = y;
+				progress.w = w;
+
+				if(game.event.tick)
+				{
+					var percent = current/max;
+					game.paint(progress.background, x, y, w, h);
+					game.paint(progress.image, x, y, percent * w, h);
+				};
+			};
+			game.progress[progress.name] = progress;
+		}
+	},
+
 	scene: [],
 
 	set:
@@ -533,19 +566,21 @@ var game =
 		canvas.resize();
 		game.set.font.size();
 
-		game.buttons.chest.show(game.data.canvas.w2 + game.data.canvas.s8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+		game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.buttons.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+		game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.buttons.diamond.show(game.data.canvas.w2 - game.data.canvas.s4 + game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+		game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.buttons.sword.show(game.data.canvas.w2 - game.data.canvas.s4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+		game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.buttons.perks.show(game.data.canvas.w2 + game.data.canvas.s4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+		game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+		game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
 
 		if(game.event.tick)
 		{
-			game.animate(game.animations.coin, game.data.canvas.w1 - game.data.canvas.w32, game.data.canvas.h64, 80, game.data.canvas.h32, game.data.canvas.h32);
+			game.animate(game.animations.coin, game.data.canvas.w1 - game.data.canvas.w32 + game.data.canvas.w64/2, game.data.canvas.h64, 80, game.data.canvas.h32, game.data.canvas.h32);
 			game.print(game.data.canvas.h1, game.data.canvas.w1 - game.data.canvas.w32, game.data.canvas.h32, 'right', game.data.canvas.h32, '#e8b844');
 		};
 	}
