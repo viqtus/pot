@@ -15,7 +15,7 @@ var context = canvas.getContext('2d');
 
 var game =
 {
-	animate: function(animation, x, y, interval)
+	animate: function(animation, x, y, interval, w, h)
 	{
 		var animate =
 		{
@@ -23,7 +23,7 @@ var game =
 			interval: interval,
 			type: 'animate',
 			x: x,
-			y: y
+			y: y,
 		};
 
 		if(animation.time <= (animation.images.length - 1) * animate.interval)
@@ -41,6 +41,8 @@ var game =
 		};
 
 		animate.image = animation.images[animate.frame].image;
+		animate.h = (h) ? h : animate.image.height;
+		animate.w = (w) ? w : animate.image.width;
 		animate.name = animate.image.name;
 
 		game.scene.push(animate);
@@ -90,12 +92,16 @@ var game =
 				{
 					button.pressed = true;
 					button.active();
+					button.image = (button.pressed) ? object.image.pressed : object.image.default;
+					game.paint(button.image, x, y, w, h);
 					game.play(game.sounds.tap);
 				};
 
 				if(game.event.mouse.up)
 				{
 					button.pressed = false;
+					button.image = (button.pressed) ? object.image.pressed : object.image.default;
+					game.paint(button.image, x, y, w, h);
 				};
 
 				if(game.event.tick)
@@ -180,8 +186,8 @@ var game =
 					switch(game.scene[i].type)
 					{
 						case 'animate':
-							context.clearRect(game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
-							context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].image.width, game.scene[i].image.height);
+							context.clearRect(game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
+							context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
 							break;
 						case 'image':
 							if(game.scene[i].clear)
@@ -202,6 +208,7 @@ var game =
 							context.fillStyle = game.scene[i].color;
 							context.font = game.scene[i].size + 'px ' + game.scene[i].family;
 							context.textAlign = game.scene[i].align;
+							context.textBaseline = 'middle';
 							context.fillText(game.scene[i].text, game.scene[i].x, game.scene[i].y);
 							break;
 					};
@@ -224,10 +231,10 @@ var game =
 			{
 				if
 				(
-					(game.data.event.mouse.move.x > object.x) &&
-					(game.data.event.mouse.move.x < object.x + object.w) &&
-					(game.data.event.mouse.move.y > object.y) &&
-					(game.data.event.mouse.move.y < object.y + object.h)
+					(game.data.event.mouse.down.x > object.x) &&
+					(game.data.event.mouse.down.x < object.x + object.w) &&
+					(game.data.event.mouse.down.y > object.y) &&
+					(game.data.event.mouse.down.y < object.y + object.h)
 				)
 				{
 					return true;
@@ -386,7 +393,7 @@ var game =
 		{
 			align: 'left',
 			color: 'black',
-			family: 'monospace',
+			family: 'Arial',
 			size: 12
 		},
 		interval: 80,
@@ -413,6 +420,7 @@ var game =
 	play: function(sound, volume, loop)
 	{
 		sound.loop = (loop) ? true : false;
+		sound.currentTime = 0;
 		sound.volume = (volume) ? volume * game.options.volume : game.options.volume;
 		sound.play();
 	},
@@ -537,8 +545,8 @@ var game =
 
 		if(game.event.tick)
 		{
-			game.animate(game.animations.coin, game.data.canvas.w2, game.data.canvas.h64, 80);
-			game.print(game.data.canvas.h1, game.data.canvas.w2, game.data.canvas.h32, 'right', game.data.canvas.h32, 'orange');
+			game.animate(game.animations.coin, game.data.canvas.w1 - game.data.canvas.w32, game.data.canvas.h64, 80, game.data.canvas.h32, game.data.canvas.h32);
+			game.print(game.data.canvas.h1, game.data.canvas.w1 - game.data.canvas.w32, game.data.canvas.h32, 'right', game.data.canvas.h32, '#e8b844');
 		};
 	}
 };

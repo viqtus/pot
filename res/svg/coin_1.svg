@@ -16,7 +16,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="button_chest_pressed.svg">
+   sodipodi:docname="coin_1.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -36,10 +36,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="5.6568542"
-     inkscape:cx="42.165691"
+     inkscape:cx="41.812137"
      inkscape:cy="31.60862"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      inkscape:showpageshadow="false"
@@ -75,39 +75,16 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-988.3622)">
-    <rect
-       ry="8.0000162"
-       rx="0"
-       y="996.36218"
-       x="4"
-       height="52.000019"
-       width="56"
-       id="rect3365-0"
-       style="fill:#8b713d;fill-opacity:1" />
-    <rect
-       ry="8.0000162"
-       rx="0"
-       y="996.36218"
-       x="4"
-       height="52.000019"
-       width="56"
-       id="rect3365"
-       style="fill:#e8b844;fill-opacity:1" />
+    <ellipse
+       style="fill:#e8b844;fill-opacity:1;stroke:none;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4150"
+       cx="32"
+       cy="1020.3622"
+       rx="20"
+       ry="28.00001" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="Layer 3">
-    <g
-       id="g4744"
-       transform="translate(0,3.9999999)">
-      <g
-         id="g4735" />
-      <path
-         id="rect4733"
-         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 30,26 4,0 0,4 -4,0 z m -2,6 8,0 0,20 -8,0 z m -18,-6 18,0 0,26 -18,0 z m 26,0 18,0 0,26 -18,0 z M 10,7.999999 l 44,0 0,16 -44,0 z"
-         inkscape:connector-curvature="0" />
-    </g>
-  </g>
+     inkscape:label="Layer 3" />
 </svg>
