@@ -68,6 +68,38 @@ var game =
 		}
 	},
 
+	area:
+	{
+		set create(object)
+		{
+			var area = {};
+				area.id = object.id;
+				area.image = object.image;
+				area.level = object.level;
+				area.name = object.name;
+				area.X = object.x;
+				area.Y = object.y;
+
+			area.show = function(x, y, w, h)
+			{
+				game.button.plain.show(area.x, area.y, area.w, area.h);
+				game.animate(game.animations.plain, area.x, area.y, 100, area.w, area.h);
+				if(game.event.tick)
+				{
+					//game.animate(game.animations.plain, x, y, 100, w, h);
+					area.h = h;
+					area.x = x;
+					area.y = y;
+					area.w = w;
+					game.print(area.name + '[' + area.X + ':' + area.Y + ']', game.data.canvas.w2, y + game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
+					game.print(area.level + ' уровень', game.data.canvas.w2, y + h - game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
+				};
+			};
+
+			game.area[area.id] = area;
+		}
+	},
+
 	buffer: [],
 
 	button:
@@ -314,6 +346,30 @@ var game =
 	{
 		canvas.resize(true);
 		game.set.icon(game.images.pot);
+
+		game.area.create =
+		{
+			id: 'plain',
+			image: game.images.area_plain,
+			level: 1,
+			name: 'Равнина',
+			x: 0,
+			y: 0
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
+				window.console.log('press area_plain');
+			},
+			image:
+			{
+				default: game.images.area_plain,
+				pressed: game.images.area_plain
+			},
+			name: 'plain'
+		};
 
 		game.button.create =
 		{
@@ -623,6 +679,8 @@ var game =
 	{
 		canvas.resize();
 		game.set.font.size();
+
+		game.area.plain.show(game.data.canvas.w2 - game.data.canvas.s8, game.data.canvas.h2 - game.data.canvas.s8, game.data.canvas.s4, game.data.canvas.s4);
 
 		game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
