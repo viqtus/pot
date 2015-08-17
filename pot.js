@@ -82,7 +82,6 @@ var game =
 
 			game.map[area.X] = (game.map[area.X]) ? game.map[area.X] : {};
 			game.map[area.X][area.Y] = area.id;
-			window.console.log(game.map);
 
 			game.button.create =
 			{
@@ -105,17 +104,6 @@ var game =
 				if(area.id != 'none')
 				{
 					game.button[area.id].show(area.x, area.y, area.w, area.h);
-					if((game.hero.position.x == area.X) && (game.hero.position.y == area.Y))
-					{
-						if(game.animations[area.id])
-						{
-							game.animate(game.animations[area.id], area.x, area.y, 100, area.w, area.h);
-						}
-						else
-						{
-							game.paint(area.image, area.x, area.y, area.w, area.h)
-						};
-					};
 				};
 				if(game.event.tick)
 				{
@@ -123,7 +111,21 @@ var game =
 					area.x = x;
 					area.y = y;
 					area.w = w;
-					game.print(area.name + '[' + area.level + ']', x + w/2, y - game.data.canvas.h64, 'center', 1.4*game.data.canvas.h64, '#fff', undefined, true);
+					if(area.id != 'none')
+					{
+						game.print(area.name + '[' + area.level + ']', x + w/2, y - game.data.canvas.h64, 'center', 1.4*game.data.canvas.h64, '#fff', undefined, true);
+						if((game.hero.position.x == area.X) && (game.hero.position.y == area.Y))
+						{
+							if(game.animations[area.id])
+							{
+								game.animate(game.animations[area.id], area.x, area.y, 100, area.w, area.h);
+							}
+							else
+							{
+								game.paint(area.image, area.x, area.y, area.w, area.h)
+							};
+						};
+					};
 				};
 			};
 
@@ -287,6 +289,24 @@ var game =
 		};
 	},
 
+	enemy:
+	{
+		set create(object)
+		{
+			var enemy = {};
+				enemy.id = object.id;
+				enemy.image = object.image;
+				enemy.level = object.level;
+				enemy.name = object.name;
+
+			enemy.show = function()
+			{
+
+			};
+			game.enemy[enemy.id] = enemy;
+		}
+	},
+
 	event:
 	{
 		mouse:
@@ -410,6 +430,16 @@ var game =
 			name: 'Хижина',
 			x: 1,
 			y: 0
+		};
+
+		game.area.create =
+		{
+			id: 'plain_mountains',
+			image: game.images.area_plain_mountains,
+			level: 3,
+			name: 'Горы',
+			x: 0,
+			y: -1
 		};
 
 		game.area.create =
@@ -814,7 +844,23 @@ var game =
 					game.paint(game.images.button_choice, game.button.chest.x, game.button.chest.y, game.button.chest.w, game.button.chest.h);
 					break;
 				case 'map':
-					game.paint(game.images.button_choice, game.button.compass.x, game.button.compass.y, game.button.compass.w, game.button.compass.h);
+					game.paint
+					(
+						game.images.button_choice,
+						game.button.compass.x,
+						game.button.compass.y,
+						game.button.compass.w,
+						game.button.compass.h
+					);
+
+					game.paint
+					(
+						game.images.map,
+						game.data.canvas.w4,
+						0,
+						game.data.canvas.w2,
+						game.data.canvas.h2 + game.data.canvas.h4
+					);
 
 					var center = 'none';
 					if(game.map[game.hero.position.x])
@@ -824,7 +870,13 @@ var game =
 							center = game.map[game.hero.position.x][game.hero.position.y];
 						};
 					};
-					game.area[center].show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+					game.area[center].show
+					(
+						game.data.canvas.w2 - game.data.canvas.s16,
+						game.data.canvas.h8 + game.data.canvas.s8,
+						game.data.canvas.s8,
+						game.data.canvas.s8
+					);
 
 					var down = 'none';
 					if(game.map[game.hero.position.x])
@@ -834,7 +886,13 @@ var game =
 							down = game.map[game.hero.position.x][game.hero.position.y - 1];
 						};
 					};
-					game.area[down].show(game.data.canvas.w2 - game.data.canvas.s16, 5*game.data.canvas.h16 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+					game.area[down].show
+					(
+						game.data.canvas.w2 - game.data.canvas.s16,
+						5*game.data.canvas.h16 + game.data.canvas.s8,
+						game.data.canvas.s8,
+						game.data.canvas.s8
+					);
 
 					var left = 'none';
 					if(game.map[game.hero.position.x - 1])
@@ -844,7 +902,13 @@ var game =
 							left = game.map[game.hero.position.x - 1][game.hero.position.y];
 						};
 					};
-					game.area[left].show(game.data.canvas.w2 - game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+					game.area[left].show
+					(
+						game.data.canvas.w2 - game.data.canvas.w8 - game.data.canvas.s16,
+						game.data.canvas.h8 + game.data.canvas.s8,
+						game.data.canvas.s8,
+						game.data.canvas.s8
+					);
 
 					var right = 'none';
 					if(game.map[game.hero.position.x + 1])
@@ -854,7 +918,13 @@ var game =
 							right = game.map[game.hero.position.x + 1][game.hero.position.y];
 						};
 					};
-					game.area[right].show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+					game.area[right].show
+					(
+						game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16,
+						game.data.canvas.h8 + game.data.canvas.s8,
+						game.data.canvas.s8,
+						game.data.canvas.s8
+					);
 
 					var up = 'none';
 					if(game.map[game.hero.position.x])
@@ -864,7 +934,13 @@ var game =
 							up = game.map[game.hero.position.x][game.hero.position.y + 1];
 						};
 					};
-					game.area[up].show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h16, game.data.canvas.s8, game.data.canvas.s8);
+					game.area[up].show
+					(
+						game.data.canvas.w2 - game.data.canvas.s16,
+						game.data.canvas.h16,
+						game.data.canvas.s8,
+						game.data.canvas.s8
+					);
 					break;
 				case 'settings':
 					game.paint(game.images.settings_choice, game.button.settings.x, game.button.settings.y, game.button.settings.w, game.button.settings.h);
