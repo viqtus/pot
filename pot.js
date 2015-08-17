@@ -87,6 +87,8 @@ var game =
 			{
 				active: function()
 				{
+					game.hero.position.x = area.X;
+					game.hero.position.y = area.Y;
 					window.console.log('press area ' + area.name);
 				},
 				image:
@@ -99,17 +101,28 @@ var game =
 
 			area.show = function(x, y, w, h)
 			{
-				game.button[area.id].show(area.x, area.y, area.w, area.h);
-				//game.animate(game.animations[area.id], area.x, area.y, 100, area.w, area.h);
+				if(area.id != 'none')
+				{
+					game.button[area.id].show(area.x, area.y, area.w, area.h);
+					if((game.hero.position.x == area.X) && (game.hero.position.y == area.Y))
+					{
+						if(game.animations[area.id])
+						{
+							game.animate(game.animations[area.id], area.x, area.y, 100, area.w, area.h);
+						}
+						else
+						{
+							game.paint(area.image, area.x, area.y, area.w, area.h)
+						};
+					};
+				};
 				if(game.event.tick)
 				{
-					//game.animate(game.animations.plain, x, y, 100, w, h);
 					area.h = h;
 					area.x = x;
 					area.y = y;
 					area.w = w;
-					game.print(area.name, x + w/2, y - game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
-					game.print(area.level, x + w/2, y + h + game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
+					game.print(area.name + '[' + area.level + ']', x + w/2, y - game.data.canvas.h64, 'center', 1.4*game.data.canvas.h64, '#fff', undefined, true);
 				};
 			};
 
@@ -367,7 +380,7 @@ var game =
 	{
 		canvas.resize(true);
 		game.set.icon(game.images.pot);
-
+		
 		game.area.create =
 		{
 			id: 'none',
@@ -673,6 +686,17 @@ var game =
 
 	set:
 	{
+		background: function()
+		{
+			if(game.data.canvas.w1 > game.data.canvas.h1)
+			{
+				game.paint(game.area[game.map[game.hero.position.x][game.hero.position.y]].image, 0, game.data.canvas.h1 - game.data.canvas.w1, game.data.canvas.w1, game.data.canvas.w1);
+			}
+			else
+			{
+				game.paint(game.area[game.map[game.hero.position.x][game.hero.position.y]].image, game.data.canvas.w1 - game.data.canvas.h1, 0, game.data.canvas.h1, game.data.canvas.h1);
+			};
+		},
 		data:
 		{
 			canvas: function()
@@ -735,26 +759,7 @@ var game =
 		game.set.font.size();
 		if((game.event.window.load != undefined) && (game.event.window.load != true))
 		{
-			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s16 - game.data.canvas.s32, game.data.canvas.h64 + game.data.canvas.s64, game.data.canvas.s16, game.data.canvas.s16);
-
-			game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
-			game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
-			game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
-			game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
-
+			game.set.background();
 			switch (game.mode)
 			{
 				case 'battle':
@@ -790,7 +795,7 @@ var game =
 							left = game.map[game.hero.position.x - 1][game.hero.position.y];
 						};
 					};
-					game.area[left].show(game.data.canvas.w2 - game.data.canvas.w8, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+					game.area[left].show(game.data.canvas.w2 - game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 					var right = 'none';
 					if(game.map[game.hero.position.x + 1])
@@ -800,7 +805,7 @@ var game =
 							right = game.map[game.hero.position.x + 1][game.hero.position.y];
 						};
 					};
-					game.area[right].show(game.data.canvas.w2 + game.data.canvas.w8 - 2*game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+					game.area[right].show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 					var up = 'none';
 					if(game.map[game.hero.position.x])
@@ -819,6 +824,26 @@ var game =
 					game.paint(game.images.button_choice, game.button.perks.x, game.button.perks.y, game.button.perks.w, game.button.perks.h);
 					break;
 			};
+
+			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s16 - game.data.canvas.s32, game.data.canvas.h64 + game.data.canvas.s64, game.data.canvas.s16, game.data.canvas.s16);
+
+			game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+			game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+			game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+			game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
 		};
 	}
 };
