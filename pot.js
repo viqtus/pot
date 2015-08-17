@@ -80,6 +80,9 @@ var game =
 				area.X = object.x;
 				area.Y = object.y;
 
+			game.map[area.X] = {};
+			game.map[area.X][area.Y] = area.id;
+
 			game.button.create =
 			{
 				active: function()
@@ -105,8 +108,8 @@ var game =
 					area.x = x;
 					area.y = y;
 					area.w = w;
-					game.print(area.name + '[' + area.X + ':' + area.Y + ']', x + w/2, y - game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
-					game.print(area.level + ' уровень', x + w/2, y + h + game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
+					game.print(area.name, x + w/2, y - game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
+					game.print(area.level, x + w/2, y + h + game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
 				};
 			};
 
@@ -367,6 +370,16 @@ var game =
 
 		game.area.create =
 		{
+			id: 'none',
+			image: game.images.none,
+			level: 0,
+			name: 'Пустота',
+			x: 'x',
+			y: 'y'
+		};
+
+		game.area.create =
+		{
 			id: 'plain',
 			image: game.images.area_plain,
 			level: 1,
@@ -380,7 +393,7 @@ var game =
 			id: 'plain_road',
 			image: game.images.area_plain_road,
 			level: 2,
-			name: 'Дорога на равнине',
+			name: 'Дорога',
 			x: -1,
 			y: 0
 		};
@@ -519,6 +532,8 @@ var game =
 			name: 'xp'
 		};
 	},
+
+	map: {},
 
 	mode: 'begin',
 
@@ -753,8 +768,49 @@ var game =
 					break;
 				case 'map':
 					game.paint(game.images.button_choice, game.button.compass.x, game.button.compass.y, game.button.compass.w, game.button.compass.h);
-					game.area.plain.show(game.data.canvas.w2 - game.data.canvas.s8, game.data.canvas.h2 - game.data.canvas.s8, game.data.canvas.s4, game.data.canvas.s4);
-					game.area.plain_road.show(game.data.canvas.w2 - game.data.canvas.s8 - game.data.canvas.w4, game.data.canvas.h2 - game.data.canvas.s16, game.data.canvas.s8, game.data.canvas.s8);
+
+					var center = (game.map[game.hero.position.x][game.hero.position.y]) ? game.map[game.hero.position.x][game.hero.position.y] : 'none';
+					game.area[center].show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+					var down = 'none';
+					if(game.map[game.hero.position.x])
+					{
+						if(game.map[game.hero.position.x][game.hero.position.y - 1])
+						{
+							down = game.map[game.hero.position.x][game.hero.position.y - 1];
+						};
+					};
+					game.area[down].show(game.data.canvas.w2 - game.data.canvas.s16, 5*game.data.canvas.h16 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+					var left = 'none';
+					if(game.map[game.hero.position.x - 1])
+					{
+						if(game.map[game.hero.position.x - 1][game.hero.position.y])
+						{
+							left = game.map[game.hero.position.x - 1][game.hero.position.y];
+						};
+					};
+					game.area[left].show(game.data.canvas.w2 - game.data.canvas.w8, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+					var right = 'none';
+					if(game.map[game.hero.position.x + 1])
+					{
+						if(game.map[game.hero.position.x + 1][game.hero.position.y])
+						{
+							right = game.map[game.hero.position.x + 1][game.hero.position.y];
+						};
+					};
+					game.area[right].show(game.data.canvas.w2 + game.data.canvas.w8 - 2*game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+					var up = 'none';
+					if(game.map[game.hero.position.x])
+					{
+						if(game.map[game.hero.position.x][game.hero.position.y + 1])
+						{
+							up = game.map[game.hero.position.x][game.hero.position.y + 1];
+						};
+					};
+					game.area[up].show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h16, game.data.canvas.s8, game.data.canvas.s8);
 					break;
 				case 'settings':
 					game.paint(game.images.settings_choice, game.button.settings.x, game.button.settings.y, game.button.settings.w, game.button.settings.h);
