@@ -80,10 +80,24 @@ var game =
 				area.X = object.x;
 				area.Y = object.y;
 
+			game.button.create =
+			{
+				active: function()
+				{
+					window.console.log('press area ' + area.name);
+				},
+				image:
+				{
+					default: area.image,
+					pressed: area.image
+				},
+				name: area.id
+			};
+
 			area.show = function(x, y, w, h)
 			{
-				game.button.plain.show(area.x, area.y, area.w, area.h);
-				game.animate(game.animations.plain, area.x, area.y, 100, area.w, area.h);
+				game.button[area.id].show(area.x, area.y, area.w, area.h);
+				//game.animate(game.animations[area.id], area.x, area.y, 100, area.w, area.h);
 				if(game.event.tick)
 				{
 					//game.animate(game.animations.plain, x, y, 100, w, h);
@@ -91,8 +105,8 @@ var game =
 					area.x = x;
 					area.y = y;
 					area.w = w;
-					game.print(area.name + '[' + area.X + ':' + area.Y + ']', game.data.canvas.w2, y + game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
-					game.print(area.level + ' уровень', game.data.canvas.w2, y + h - game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
+					game.print(area.name + '[' + area.X + ':' + area.Y + ']', x + w/2, y - game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
+					game.print(area.level + ' уровень', x + w/2, y + h + game.data.canvas.h64, 'center', game.data.canvas.h32, '#fff');
 				};
 			};
 
@@ -232,6 +246,10 @@ var game =
 							context.drawImage(game.scene[i].image, game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
 							context.restore();
 							break;
+						case 'rectangle':
+							context.fillStyle = game.scene[i].color;
+							context.fillRect(game.scene[i].x, game.scene[i].y, game.scene[i].w, game.scene[i].h);
+							break;
 						case 'text':
 							if(game.scene[i].clear)
 							{
@@ -298,7 +316,7 @@ var game =
 		},
 		window:
 		{
-			load: false,
+			load: undefined,
 			resize: false
 		}
 	},
@@ -357,24 +375,21 @@ var game =
 			y: 0
 		};
 
-		game.button.create =
+		game.area.create =
 		{
-			active: function()
-			{
-				window.console.log('press area_plain');
-			},
-			image:
-			{
-				default: game.images.area_plain,
-				pressed: game.images.area_plain
-			},
-			name: 'plain'
+			id: 'plain_road',
+			image: game.images.area_plain_road,
+			level: 2,
+			name: 'Дорога на равнине',
+			x: -1,
+			y: 0
 		};
 
 		game.button.create =
 		{
 			active: function()
 			{
+				game.mode = 'inventory';
 				window.console.log('press chest');
 			},
 			image:
@@ -389,6 +404,7 @@ var game =
 		{
 			active: function()
 			{
+				game.mode = 'map';
 				window.console.log('press compass');
 			},
 			image:
@@ -403,6 +419,7 @@ var game =
 		{
 			active: function()
 			{
+				game.mode = 'craft';
 				window.console.log('press diamond');
 			},
 			image:
@@ -417,6 +434,7 @@ var game =
 		{
 			active: function()
 			{
+				game.mode = 'upgrade';
 				window.console.log('press perks');
 			},
 			image:
@@ -431,6 +449,7 @@ var game =
 		{
 			active: function()
 			{
+				game.mode = 'settings';
 				window.console.log('press settings');
 			},
 			image:
@@ -445,6 +464,7 @@ var game =
 		{
 			active: function()
 			{
+				game.mode = 'battle';
 				window.console.log('press sword');
 			},
 			image:
@@ -500,7 +520,7 @@ var game =
 		};
 	},
 
-	mode: 'play',
+	mode: 'begin',
 
 	options:
 	{
@@ -512,6 +532,10 @@ var game =
 			size: 12
 		},
 		interval: 100,
+		rectangle:
+		{
+			color: '#ffffff'
+		},
 		volume: 1
 	},
 
@@ -615,6 +639,21 @@ var game =
 		}
 	},
 
+	rectangle:
+	{
+		show: function(x, y, w, h, color)
+		{
+			var rectangle = {};
+				rectangle.color = (color) ? color : game.options.rectangle.color;
+				rectangle.h = h;
+				rectangle.type = 'rectangle';
+				rectangle.w = w
+				rectangle.x = x;
+				rectangle.y = y;
+			game.scene.push(rectangle);
+		}
+	},
+
 	scene: [],
 
 	set:
@@ -679,28 +718,52 @@ var game =
 	{
 		canvas.resize();
 		game.set.font.size();
+		if((game.event.window.load != undefined) && (game.event.window.load != true))
+		{
+			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.area.plain.show(game.data.canvas.w2 - game.data.canvas.s8, game.data.canvas.h2 - game.data.canvas.s8, game.data.canvas.s4, game.data.canvas.s4);
+			game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+			game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+			game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s16 - game.data.canvas.s32, game.data.canvas.h64 + game.data.canvas.s64, game.data.canvas.s16, game.data.canvas.s16);
 
-		game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+			game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s32 - game.data.canvas.s64, game.data.canvas.h64, game.data.canvas.s32, game.data.canvas.s32);
+			game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
-		game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+			game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
 
-		game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+			game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
 
-		game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+			game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
 
-		game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+			game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
 
-		game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
-		game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
+			switch (game.mode)
+			{
+				case 'battle':
+					game.paint(game.images.button_choice, game.button.sword.x, game.button.sword.y, game.button.sword.w, game.button.sword.h);
+					break;
+				case 'craft':
+					game.paint(game.images.button_choice, game.button.diamond.x, game.button.diamond.y, game.button.diamond.w, game.button.diamond.h);
+					break;
+				case 'inventory':
+					game.paint(game.images.button_choice, game.button.chest.x, game.button.chest.y, game.button.chest.w, game.button.chest.h);
+					break;
+				case 'map':
+					game.paint(game.images.button_choice, game.button.compass.x, game.button.compass.y, game.button.compass.w, game.button.compass.h);
+					game.area.plain.show(game.data.canvas.w2 - game.data.canvas.s8, game.data.canvas.h2 - game.data.canvas.s8, game.data.canvas.s4, game.data.canvas.s4);
+					game.area.plain_road.show(game.data.canvas.w2 - game.data.canvas.s8 - game.data.canvas.w4, game.data.canvas.h2 - game.data.canvas.s16, game.data.canvas.s8, game.data.canvas.s8);
+					break;
+				case 'settings':
+					game.paint(game.images.settings_choice, game.button.settings.x, game.button.settings.y, game.button.settings.w, game.button.settings.h);
+					break;
+				case 'upgrade':
+					game.paint(game.images.button_choice, game.button.perks.x, game.button.perks.y, game.button.perks.w, game.button.perks.h);
+					break;
+			};
+		};
 	}
 };
 
@@ -718,8 +781,6 @@ window.onload = function()
 {
 	game.event.window.load = true;
 	game.loading();
-	game.update();
-	game.draw();
 	game.event.window.load = false;
 };
 
