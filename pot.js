@@ -80,8 +80,9 @@ var game =
 				area.X = object.x;
 				area.Y = object.y;
 
-			game.map[area.X] = {};
+			game.map[area.X] = (game.map[area.X]) ? game.map[area.X] : {};
 			game.map[area.X][area.Y] = area.id;
+			window.console.log(game.map);
 
 			game.button.create =
 			{
@@ -380,7 +381,7 @@ var game =
 	{
 		canvas.resize(true);
 		game.set.icon(game.images.pot);
-		
+
 		game.area.create =
 		{
 			id: 'none',
@@ -403,12 +404,32 @@ var game =
 
 		game.area.create =
 		{
+			id: 'plain_hut',
+			image: game.images.area_plain_hut,
+			level: 1,
+			name: 'Хижина',
+			x: 1,
+			y: 0
+		};
+
+		game.area.create =
+		{
 			id: 'plain_road',
 			image: game.images.area_plain_road,
 			level: 2,
 			name: 'Дорога',
 			x: -1,
 			y: 0
+		};
+
+		game.area.create =
+		{
+			id: 'plain_wood',
+			image: game.images.area_plain_wood,
+			level: 2,
+			name: 'Лес',
+			x: 0,
+			y: 1
 		};
 
 		game.button.create =
@@ -556,7 +577,7 @@ var game =
 		{
 			align: 'left',
 			color: 'black',
-			family: 'monospace',
+			family: 'Verdana',
 			size: 12
 		},
 		interval: 100,
@@ -660,7 +681,7 @@ var game =
 					var percent = current/max;
 					game.paint(progress.background, x, y, w, h);
 					game.paint(progress.image, x, y, percent * w, h);
-					game.print(current + '/' + max, x + percent * w + game.data.canvas.w64/2, y + game.data.canvas.h64/2, 'right', game.data.canvas.h64, progress.color, undefined, true);
+					game.print(current + '/' + max, x + percent * w + game.data.canvas.w64/2, y + game.data.canvas.h64/2, 'center', game.data.canvas.h64, progress.color, undefined, true);
 				};
 			};
 			game.progress[progress.name] = progress;
@@ -760,6 +781,27 @@ var game =
 		if((game.event.window.load != undefined) && (game.event.window.load != true))
 		{
 			game.set.background();
+
+			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s16 - game.data.canvas.s32, game.data.canvas.h64 + game.data.canvas.s64, game.data.canvas.s16, game.data.canvas.s16);
+
+			game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
+
+			game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+			game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+			game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
+
+			game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
+
 			switch (game.mode)
 			{
 				case 'battle':
@@ -774,7 +816,14 @@ var game =
 				case 'map':
 					game.paint(game.images.button_choice, game.button.compass.x, game.button.compass.y, game.button.compass.w, game.button.compass.h);
 
-					var center = (game.map[game.hero.position.x][game.hero.position.y]) ? game.map[game.hero.position.x][game.hero.position.y] : 'none';
+					var center = 'none';
+					if(game.map[game.hero.position.x])
+					{
+						if(game.map[game.hero.position.x][game.hero.position.y])
+						{
+							center = game.map[game.hero.position.x][game.hero.position.y];
+						};
+					};
 					game.area[center].show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h8 + game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 					var down = 'none';
@@ -824,26 +873,6 @@ var game =
 					game.paint(game.images.button_choice, game.button.perks.x, game.button.perks.y, game.button.perks.w, game.button.perks.h);
 					break;
 			};
-
-			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s16 - game.data.canvas.s32, game.data.canvas.h64 + game.data.canvas.s64, game.data.canvas.s16, game.data.canvas.s16);
-
-			game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
-			game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
-			game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
-			game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
-			game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
 		};
 	}
 };
