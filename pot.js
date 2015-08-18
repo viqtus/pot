@@ -306,7 +306,7 @@ var game =
 	{
 		set create(object)
 		{
-			var enemy = {attack: {}, hp: {}};
+			var enemy = {attack: {}, hp: {}, skills: {}};
 				enemy.attack.damage = object.damage;
 				enemy.attack.speed = object.speed;
 				enemy.gold = object.gold;
@@ -316,13 +316,25 @@ var game =
 				enemy.image = object.image;
 				enemy.level = object.level;
 				enemy.name = object.name;
+				enemy.skills.vampirism = (enemy.skills.vampirism) ? enemy.skills.vampirism : false;
 				enemy.xp = object.xp;
 
 			enemy.run = function()
 			{
 				if(game.event.tick)
 				{
-					game.hero.hp.current -= enemy.attack.damage*game.options.interval/1000;
+					if(enemy.skills.vampirism)
+					{
+						if(enemy.hp.current + enemy.attack.damage <= enemy.hp.max)
+						{
+							enemy.hp.current += enemy.attack.damage;
+						}
+						else
+						{
+							enemy.hp.current = enemy.hp.max;
+						};
+					};
+					game.hero.hp.current -= enemy.attack.damage*game.options.interval/(1000/enemy.attack.speed);
 				};
 			};
 
@@ -336,8 +348,10 @@ var game =
 					enemy.y = game.data.canvas.h2;
 					game.progress.hp.show(enemy.hp.current, enemy.hp.max, enemy.x, enemy.y - enemy.h/2, game.data.canvas.s4, game.data.canvas.h64);
 					game.paint(enemy.image, enemy.x, enemy.y, enemy.w, enemy.h);
-					game.print(enemy.level, enemy.x, enemy.y - enemy.h/2 + game.data.canvas.h32, 'right' , game.data.canvas.h16, '#fff', undefined, true);
-					game.print(enemy.name, enemy.x, enemy.y - enemy.h/2 + game.data.canvas.h32, 'left' , game.data.canvas.h32, '#fff', undefined, true);
+
+					var color = (enemy.level > game.hero.level) ? '#e8446b' : '#44e8a5';
+					game.print(enemy.level, enemy.x, enemy.y - enemy.h/2 + game.data.canvas.h32, 'right' , game.data.canvas.h16, color, undefined, true);
+					game.print(enemy.name, enemy.x, enemy.y - enemy.h/2 + game.data.canvas.h32, 'left' , game.data.canvas.h32, color, undefined, true);
 				};
 			};
 			game.enemy[enemy.id] = enemy;
@@ -397,21 +411,41 @@ var game =
 
 	hero:
 	{
+		agility: 1,
 		attack:
 		{
-			damage: 1,
-			speed: 1
+			get damage()
+			{
+				var damage = game.hero.strength;
+				return damage;
+			},
+			get speed()
+			{
+				var speed = 1 + game.agility;
+				return speed;
+			}
 		},
+		gold: 0,
 		hp:
 		{
 			current: 10,
-			max: 10
+			get max()
+			{
+				var hp = 10 + game.hero.strength*game.hero.level;
+				return hp;
+			}
 		},
+		intelligence: 1,
 		level: 0,
+		luck: 0,
 		mp:
 		{
 			current: 10,
-			max: 10
+			get max()
+			{
+				var mp = 10 + game.hero.intelligence*game.hero.level;
+				return mp;
+			}
 		},
 		points: 0,
 		position:
@@ -435,14 +469,19 @@ var game =
 				if(game.event.tick)
 				{
 					game.hero.time += game.options.interval/1000;
-					game.hero.target.hp.current -= game.hero.attack.damage*game.options.interval/1000;
+					game.hero.target.hp.current -= game.hero.attack.damage*game.options.interval/(1000/game.hero.agility);
 				};
 			};
 		},
+		strength: 1,
 		sp:
 		{
 			current: 10,
-			max: 10
+			get max()
+			{
+				var sp = 10 + game.hero.agility*game.hero.level;
+				return sp;
+			}
 		},
 		target: undefined,
 		time: 0,
@@ -491,6 +530,7 @@ var game =
 
 		game.area.create =
 		{
+			enemies: ['rat_king', 'snail', 'snail', 'snail', 'snail'],
 			id: 'plain_hut',
 			image: game.images.area_plain_hut,
 			level: 1,
@@ -501,6 +541,7 @@ var game =
 
 		game.area.create =
 		{
+			enemies: ['rat_king', 'rat_king', 'rat_king', 'rat_king', 'snail', 'snail', 'ice_king'],
 			id: 'plain_mountains',
 			image: game.images.area_plain_mountains,
 			level: 3,
@@ -511,6 +552,7 @@ var game =
 
 		game.area.create =
 		{
+			enemies: ['rat_king', 'rat_king', 'snail', 'snail', 'snail', 'snail'],
 			id: 'plain_road',
 			image: game.images.area_plain_road,
 			level: 2,
@@ -521,6 +563,7 @@ var game =
 
 		game.area.create =
 		{
+			enemies: ['rat_king', 'rat_king', 'rat_king', 'rat_king', 'marceline', 'snail', 'snail'],
 			id: 'plain_wood',
 			image: game.images.area_plain_wood,
 			level: 2,
@@ -634,6 +677,112 @@ var game =
 			name: 'sword'
 		};
 
+		game.button.create =
+		{
+			active: function()
+			{
+				if(game.hero.points > 0)
+				{
+					game.hero.points--;
+				 	game.hero.agility++;
+				};
+				window.console.log('upgrade_agility');
+			},
+			image:
+			{
+				default: game.images.upgrade_agility,
+				pressed: game.images.upgrade_agility
+			},
+			name: 'upgrade_agility'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
+				if(game.hero.points > 0)
+				{
+					game.hero.points--;
+				 	game.hero.intelligence++;
+				};
+				window.console.log('upgrade_intelligence');
+			},
+			image:
+			{
+				default: game.images.upgrade_intelligence,
+				pressed: game.images.upgrade_intelligence
+			},
+			name: 'upgrade_intelligence'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
+				if(game.hero.points > 0)
+				{
+					game.hero.points--;
+				 	game.hero.luck++;
+				};
+				window.console.log('upgrade_luck');
+			},
+			image:
+			{
+				default: game.images.upgrade_luck,
+				pressed: game.images.upgrade_luck
+			},
+			name: 'upgrade_luck'
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
+				if(game.hero.points > 0)
+				{
+					game.hero.points--;
+				 	game.hero.strength++;
+				};
+				window.console.log('upgrade_strength');
+			},
+			image:
+			{
+				default: game.images.upgrade_strength,
+				pressed: game.images.upgrade_strength
+			},
+			name: 'upgrade_strength'
+		};
+
+		game.enemy.create =
+		{
+			damage: 10,
+			gold: 10,
+			hp: 100,
+			id: 'ice_king',
+			image: game.images.enemy_ice_king,
+			level: 3,
+			name: 'Ледяной Король',
+			speed: 1,
+			xp: 100
+		};
+
+		game.enemy.create =
+		{
+			damage: 6,
+			gold: 66,
+			hp: 69,
+			id: 'marceline',
+			image: game.images.enemy_marceline,
+			level: 6,
+			name: 'Марселин',
+			skills:
+			{
+				vampirism: true
+			},
+			speed: 1.5,
+			xp: 666
+		};
+
 		game.enemy.create =
 		{
 			damage: 2,
@@ -712,9 +861,13 @@ var game =
 			if(game.hero.target.hp.current <= 0)
 			{
 				game.hero.hp.current = game.hero.hp.max;
+				game.hero.mp.current = game.hero.mp.max;
+				game.hero.sp.current = game.hero.sp.max;
 				if(game.hero.xp.current + game.hero.target.xp < game.hero.xp.max)
 				{
-					game.hero.xp.current += game.hero.target.xp;
+					var bonus = (game.hero.target.level - game.hero.level > 0) ? (game.hero.target.level - game.hero.level - 0.5)*game.hero.target.xp : 0;
+					game.hero.gold += game.hero.target.gold + game.hero.luck;
+					game.hero.xp.current += game.hero.target.xp + bonus + game.hero.target.xp*game.hero.intelligence;
 				}
 				else
 				{
@@ -965,23 +1118,15 @@ var game =
 			game.button.avatar.show(game.data.canvas.s64, game.data.canvas.s64, game.data.canvas.s8, game.data.canvas.s8);
 
 			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
 			game.button.compass.show(game.data.canvas.w2 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
 			game.button.diamond.show(game.data.canvas.w4 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
 			game.button.settings.show(game.data.canvas.w1 - game.data.canvas.s16 - game.data.canvas.s32, game.data.canvas.h64 + game.data.canvas.s64, game.data.canvas.s16, game.data.canvas.s16);
-
 			game.button.sword.show(game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
-
 			game.button.perks.show(game.data.canvas.w2 + game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
 			game.progress.hp.show(game.hero.hp.current, game.hero.hp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
 			game.progress.mp.show(game.hero.mp.current, game.hero.mp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h32, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
 			game.progress.sp.show(game.hero.sp.current, game.hero.sp.max, game.data.canvas.w4 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.h8 - game.data.canvas.h64, game.data.canvas.w2 + game.data.canvas.s8, game.data.canvas.h64);
-
 			game.progress.xp.show(game.hero.xp.current, game.hero.xp.max, 0, 0, game.data.canvas.w1, game.data.canvas.h64/2);
 
 			switch (game.mode)
@@ -1103,12 +1248,26 @@ var game =
 					break;
 				case 'upgrade':
 					game.paint(game.images.button_choice, game.button.perks.x, game.button.perks.y, game.button.perks.w, game.button.perks.h);
+
+					game.button.upgrade_strength.show(game.data.canvas.w2 - game.data.canvas.s16 - game.data.canvas.s4 - game.data.canvas.s8, game.data.canvas.h32, game.data.canvas.s8, game.data.canvas.s8);
+					game.button.upgrade_agility.show(game.data.canvas.w2 - game.data.canvas.s16 - game.data.canvas.s8, game.data.canvas.h32, game.data.canvas.s8, game.data.canvas.s8);
+					game.button.upgrade_intelligence.show(game.data.canvas.w2 - game.data.canvas.s16 + game.data.canvas.s8, game.data.canvas.h32, game.data.canvas.s8, game.data.canvas.s8);
+					game.button.upgrade_luck.show(game.data.canvas.w2 - game.data.canvas.s16 + game.data.canvas.s8 + game.data.canvas.s4, game.data.canvas.h32, game.data.canvas.s8, game.data.canvas.s8);
 					break;
 			};
 
 			if(game.event.tick)
 			{
+				game.animate(game.animations.coin, game.data.canvas.s64 + game.data.canvas.s8, game.data.canvas.s64, 100, game.data.canvas.s32, game.data.canvas.s32);
+				game.print(game.hero.gold, game.data.canvas.s64 + game.data.canvas.s8 + game.data.canvas.s32, game.data.canvas.s32, 'left', game.data.canvas.s32, '#e8b844');
+
+				game.print('S ' + game.hero.strength, game.data.canvas.s64, game.data.canvas.s16 + game.data.canvas.s8, 'left', game.data.canvas.s32, '#e8446b', undefined, true);
+				game.print('A ' + game.hero.agility, game.data.canvas.s64, game.data.canvas.s16 + game.data.canvas.s32 + game.data.canvas.s8, 'left', game.data.canvas.s32, '#44e8a5', undefined, true);
+				game.print('I ' + game.hero.intelligence, game.data.canvas.s64, game.data.canvas.s8 + game.data.canvas.s8, 'left', game.data.canvas.s32, '#44b8e8', undefined, true);
+				game.print('L ' + game.hero.luck, game.data.canvas.s64, game.data.canvas.s8 + game.data.canvas.s8 + game.data.canvas.s32, 'left', game.data.canvas.s32, '#e8b844', undefined, true);
+
 				game.print(game.hero.level + ' ур', game.data.canvas.s64, game.data.canvas.s32 + game.data.canvas.s8, 'left', game.data.canvas.s32,'#fff', undefined, true);
+
 				game.print(game.hero.points, game.data.canvas.w2 + game.data.canvas.w4, game.data.canvas.h1 - game.data.canvas.s8 - game.data.canvas.h64/2 + game.data.canvas.s16, 'center', game.data.canvas.s8, 'rgba(0,0,0,0.2)');
 			};
 		};
