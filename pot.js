@@ -293,7 +293,11 @@ var game =
 	{
 		set create(object)
 		{
-			var enemy = {};
+			var enemy = {attack: {}, hp: {}};
+				enemy.attack.damage = object.damage;
+				enemy.attack.speed = object.speed;
+				enemy.hp.current = object.hp;
+				enemy.hp.max = object.hp;
 				enemy.id = object.id;
 				enemy.image = object.image;
 				enemy.level = object.level;
@@ -301,7 +305,15 @@ var game =
 
 			enemy.show = function()
 			{
-
+				if(game.event.tick)
+				{
+					enemy.h = game.data.canvas.s4;
+					enemy.w = game.data.canvas.s4;
+					enemy.x = game.data.canvas.w2 - enemy.w/2;
+					enemy.y = game.data.canvas.h2;
+					game.progress.hp.show(enemy.hp.current, enemy.hp.max, enemy.x, enemy.y - enemy.h/2, game.data.canvas.s4, game.data.canvas.h64);
+					game.paint(enemy.image, enemy.x, enemy.y, enemy.w, enemy.h);
+				};
 			};
 			game.enemy[enemy.id] = enemy;
 		}
@@ -552,6 +564,17 @@ var game =
 			name: 'sword'
 		};
 
+		game.enemy.create =
+		{
+			damage: 1,
+			hp: 10,
+			id: 'snail',
+			image: game.images.enemy_snail,
+			level: 1,
+			name: 'Улитка',
+			speed: 1
+		};
+
 		game.progress.create =
 		{
 			color: '#e8446b',
@@ -711,7 +734,7 @@ var game =
 					var percent = current/max;
 					game.paint(progress.background, x, y, w, h);
 					game.paint(progress.image, x, y, percent * w, h);
-					game.print(current + '/' + max, x + percent * w + game.data.canvas.w64/2, y + game.data.canvas.h64/2, 'center', game.data.canvas.h64, progress.color, undefined, true);
+					game.print(current + '/' + max, x + percent * w + game.data.canvas.w64/2, y + game.data.canvas.h64/2, 'left', game.data.canvas.h64, '#fff', undefined, true);
 				};
 			};
 			game.progress[progress.name] = progress;
@@ -836,6 +859,7 @@ var game =
 			{
 				case 'battle':
 					game.paint(game.images.button_choice, game.button.sword.x, game.button.sword.y, game.button.sword.w, game.button.sword.h);
+					game.enemy.snail.show();
 					break;
 				case 'craft':
 					game.paint(game.images.button_choice, game.button.diamond.x, game.button.diamond.y, game.button.diamond.w, game.button.diamond.h);
