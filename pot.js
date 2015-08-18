@@ -234,6 +234,18 @@ var game =
 		}
 	},
 
+	death: function()
+	{
+		if(game.event.tick)
+		{
+			if(game.hero.hp.current <= 0)
+			{
+				game.hero.hp.current = game.hero.hp.max;
+				game.spawn(true);
+			};
+		};
+	},
+
 	draw: function()
 	{
 		if(game.event.tick)
@@ -306,6 +318,14 @@ var game =
 				enemy.name = object.name;
 				enemy.xp = object.xp;
 
+			enemy.run = function()
+			{
+				if(game.event.tick)
+				{
+					game.hero.hp.current -= enemy.attack.damage*game.options.interval/1000;
+				};
+			};
+
 			enemy.show = function()
 			{
 				if(game.event.tick)
@@ -316,6 +336,8 @@ var game =
 					enemy.y = game.data.canvas.h2;
 					game.progress.hp.show(enemy.hp.current, enemy.hp.max, enemy.x, enemy.y - enemy.h/2, game.data.canvas.s4, game.data.canvas.h64);
 					game.paint(enemy.image, enemy.x, enemy.y, enemy.w, enemy.h);
+					game.print(enemy.level, enemy.x, enemy.y - enemy.h/2 + game.data.canvas.h32, 'right' , game.data.canvas.h16, '#fff', undefined, true);
+					game.print(enemy.name, enemy.x, enemy.y - enemy.h/2 + game.data.canvas.h32, 'left' , game.data.canvas.h32, '#fff', undefined, true);
 				};
 			};
 			game.enemy[enemy.id] = enemy;
@@ -382,15 +404,16 @@ var game =
 		},
 		hp:
 		{
-			current: 100,
-			max: 100
+			current: 10,
+			max: 10
 		},
 		level: 0,
 		mp:
 		{
-			current: 100,
-			max: 100
+			current: 10,
+			max: 10
 		},
+		points: 0,
 		position:
 		{
 			x: 0,
@@ -418,8 +441,8 @@ var game =
 		},
 		sp:
 		{
-			current: 100,
-			max: 100
+			current: 10,
+			max: 10
 		},
 		target: undefined,
 		time: 0,
@@ -688,15 +711,18 @@ var game =
 		{
 			if(game.hero.target.hp.current <= 0)
 			{
+				game.hero.hp.current = game.hero.hp.max;
 				if(game.hero.xp.current + game.hero.target.xp < game.hero.xp.max)
 				{
 					game.hero.xp.current += game.hero.target.xp;
 				}
 				else
 				{
-					game.hero.xp.current = 0;
+					game.hero.xp.current = game.hero.xp.current + game.hero.target.xp - game.hero.xp.max;
 					game.hero.level++;
+					game.hero.points += game.hero.level;
 					game.hero.xp.max += game.hero.level*game.hero.xp.max;
+					game.play(game.sounds.level);
 				};
 				game.hero.target = undefined;
 			};
@@ -772,7 +798,7 @@ var game =
 		switch(print.align)
 		{
 			case 'center':
-				print.vx = -print.size * print.text.length/2;
+				print.vx = -print.size * print.text.length/2 + print.text.length*print.size/8;
 				print.vy = -print.size/2;
 				break;
 			case 'left':
@@ -780,7 +806,7 @@ var game =
 				print.vy = -print.size/2;
 				break;
 			case 'right':
-				print.vx = -print.size*print.text.length;
+				print.vx = -print.size*print.text.length + print.text.length*print.size/4;
 				print.vy = -print.size/2;
 				break;
 			default:
@@ -789,7 +815,7 @@ var game =
 				break;
 		};
 		print.h = print.size;
-		print.w = print.size * print.text.length;
+		print.w = print.size * print.text.length - print.text.length*print.size/4;
 		game.scene.push(print);
 	},
 
@@ -908,10 +934,10 @@ var game =
 		}
 	},
 
-	spawn: function()
+	spawn: function(now)
 	{
 		var area = game.map[game.hero.position.x][game.hero.position.y];
-		if(game.hero.target == undefined)
+		if((game.hero.target == undefined)||(now))
 		{
 			var random = Math.floor(Math.random()*game.area[area].enemies.length);
 			var enemy = game.enemy[game.area[area].enemies[random]];
@@ -930,16 +956,13 @@ var game =
 		{
 			game.spawn();
 			game.hero.run();
+			game.hero.target.run();
+			game.death();
 			game.killed();
 
 			game.set.background();
 
-			/* hero left-up corner */
 			game.button.avatar.show(game.data.canvas.s64, game.data.canvas.s64, game.data.canvas.s8, game.data.canvas.s8);
-			if(game.event.tick)
-			{
-				game.print(game.hero.level + ' ур', game.data.canvas.s64, game.data.canvas.s32 + game.data.canvas.s8, 'left', game.data.canvas.s32,'#fff', undefined, true);
-			};
 
 			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
@@ -1081,6 +1104,12 @@ var game =
 				case 'upgrade':
 					game.paint(game.images.button_choice, game.button.perks.x, game.button.perks.y, game.button.perks.w, game.button.perks.h);
 					break;
+			};
+
+			if(game.event.tick)
+			{
+				game.print(game.hero.level + ' ур', game.data.canvas.s64, game.data.canvas.s32 + game.data.canvas.s8, 'left', game.data.canvas.s32,'#fff', undefined, true);
+				game.print(game.hero.points, game.data.canvas.w2 + game.data.canvas.w4, game.data.canvas.h1 - game.data.canvas.s8 - game.data.canvas.h64/2 + game.data.canvas.s16, 'center', game.data.canvas.s8, 'rgba(0,0,0,0.2)');
 			};
 		};
 	}
