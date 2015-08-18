@@ -73,6 +73,7 @@ var game =
 		set create(object)
 		{
 			var area = {};
+				area.enemies = object.enemies;
 				area.id = object.id;
 				area.image = object.image;
 				area.level = object.level;
@@ -372,6 +373,11 @@ var game =
 
 	hero:
 	{
+		attack:
+		{
+			damage: 1,
+			speed: 1
+		},
 		hp:
 		{
 			current: 90,
@@ -387,11 +393,33 @@ var game =
 			x: 0,
 			y: 0
 		},
+		run: function()
+		{
+			if(game.hero.target)
+			{
+				if((game.event.mouse.down) && (game.event.mouse.over(game.hero.target)))
+				{
+					if(game.hero.target)
+					{
+						game.hero.target.hp.current -= game.hero.attack.damage;
+						game.play(game.sounds.hit, 0.4, false);
+					};
+				};
+
+				if(game.event.tick)
+				{
+					game.hero.time += game.options.interval/1000;
+					game.hero.target.hp.current -= game.hero.attack.damage*game.options.interval/1000;
+				};
+			};
+		},
 		sp:
 		{
 			current: 80,
 			max: 100
 		},
+		target: undefined,
+		time: 0,
 		xp:
 		{
 			current: 20,
@@ -426,6 +454,7 @@ var game =
 
 		game.area.create =
 		{
+			enemies: ['rat_king', 'snail', 'snail', 'snail', 'snail'],
 			id: 'plain',
 			image: game.images.area_plain,
 			level: 1,
@@ -562,6 +591,17 @@ var game =
 				pressed: game.images.button_sword_pressed
 			},
 			name: 'sword'
+		};
+
+		game.enemy.create =
+		{
+			damage: 2,
+			hp: 15,
+			id: 'rat_king',
+			image: game.images.enemy_rat_king,
+			level: 2,
+			name: 'Крысиный король',
+			speed: 1
 		};
 
 		game.enemy.create =
@@ -734,7 +774,7 @@ var game =
 					var percent = current/max;
 					game.paint(progress.background, x, y, w, h);
 					game.paint(progress.image, x, y, percent * w, h);
-					game.print(current + '/' + max, x + percent * w + game.data.canvas.w64/2, y + game.data.canvas.h64/2, 'left', game.data.canvas.h64, '#fff', undefined, true);
+					game.print(Math.round(current) + '/' + max, x + percent * w + game.data.canvas.w64/2, y + game.data.canvas.h64/2, 'left', game.data.canvas.h64, '#fff', undefined, true);
 				};
 			};
 			game.progress[progress.name] = progress;
@@ -825,6 +865,25 @@ var game =
 		}
 	},
 
+	spawn: function()
+	{
+		var area = game.map[game.hero.position.x][game.hero.position.y];
+		if(game.hero.target == undefined)
+		{
+			var random = Math.floor(Math.random()*game.area[area].enemies.length);
+			var enemy = game.enemy[game.area[area].enemies[random]];
+				enemy.hp.current = enemy.hp.max;
+			game.hero.target = enemy;
+		}
+		else
+		{
+			if(game.hero.target.hp.current <= 0)
+			{
+				game.hero.target = undefined;
+			};
+		};
+	},
+
 	tick: undefined,
 
 	update: function()
@@ -833,6 +892,9 @@ var game =
 		game.set.font.size();
 		if((game.event.window.load != undefined) && (game.event.window.load != true))
 		{
+			game.spawn();
+			game.hero.run();
+
 			game.set.background();
 
 			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
@@ -859,7 +921,10 @@ var game =
 			{
 				case 'battle':
 					game.paint(game.images.button_choice, game.button.sword.x, game.button.sword.y, game.button.sword.w, game.button.sword.h);
-					game.enemy.snail.show();
+					if(game.hero.target)
+					{
+						game.enemy[game.hero.target.id].show();
+					};
 					break;
 				case 'craft':
 					game.paint(game.images.button_choice, game.button.diamond.x, game.button.diamond.y, game.button.diamond.w, game.button.diamond.h);
