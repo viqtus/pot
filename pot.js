@@ -297,12 +297,14 @@ var game =
 			var enemy = {attack: {}, hp: {}};
 				enemy.attack.damage = object.damage;
 				enemy.attack.speed = object.speed;
+				enemy.gold = object.gold;
 				enemy.hp.current = object.hp;
 				enemy.hp.max = object.hp;
 				enemy.id = object.id;
 				enemy.image = object.image;
 				enemy.level = object.level;
 				enemy.name = object.name;
+				enemy.xp = object.xp;
 
 			enemy.show = function()
 			{
@@ -380,12 +382,13 @@ var game =
 		},
 		hp:
 		{
-			current: 90,
+			current: 100,
 			max: 100
 		},
+		level: 0,
 		mp:
 		{
-			current: 60,
+			current: 100,
 			max: 100
 		},
 		position:
@@ -415,14 +418,14 @@ var game =
 		},
 		sp:
 		{
-			current: 80,
+			current: 100,
 			max: 100
 		},
 		target: undefined,
 		time: 0,
 		xp:
 		{
-			current: 20,
+			current: 0,
 			max: 100
 		}
 	},
@@ -501,6 +504,21 @@ var game =
 			name: 'Лес',
 			x: 0,
 			y: 1
+		};
+
+		game.button.create =
+		{
+			active: function()
+			{
+				game.mode = 'hero';
+				window.console.log('press hero');
+			},
+			image:
+			{
+				default: game.images.hero_avatar,
+				pressed: game.images.hero_avatar
+			},
+			name: 'avatar'
 		};
 
 		game.button.create =
@@ -596,23 +614,27 @@ var game =
 		game.enemy.create =
 		{
 			damage: 2,
+			gold: 5,
 			hp: 15,
 			id: 'rat_king',
 			image: game.images.enemy_rat_king,
 			level: 2,
 			name: 'Крысиный король',
-			speed: 1
+			speed: 1,
+			xp: 15
 		};
 
 		game.enemy.create =
 		{
 			damage: 1,
+			gold: 1,
 			hp: 10,
 			id: 'snail',
 			image: game.images.enemy_snail,
 			level: 1,
 			name: 'Улитка',
-			speed: 1
+			speed: 1,
+			xp: 10
 		};
 
 		game.progress.create =
@@ -657,6 +679,27 @@ var game =
 				bar: game.images.progress_bar_yellow
 			},
 			name: 'xp'
+		};
+	},
+
+	killed: function()
+	{
+		if(game.hero.target)
+		{
+			if(game.hero.target.hp.current <= 0)
+			{
+				if(game.hero.xp.current + game.hero.target.xp < game.hero.xp.max)
+				{
+					game.hero.xp.current += game.hero.target.xp;
+				}
+				else
+				{
+					game.hero.xp.current = 0;
+					game.hero.level++;
+					game.hero.xp.max += game.hero.level*game.hero.xp.max;
+				};
+				game.hero.target = undefined;
+			};
 		};
 	},
 
@@ -874,13 +917,6 @@ var game =
 			var enemy = game.enemy[game.area[area].enemies[random]];
 				enemy.hp.current = enemy.hp.max;
 			game.hero.target = enemy;
-		}
-		else
-		{
-			if(game.hero.target.hp.current <= 0)
-			{
-				game.hero.target = undefined;
-			};
 		};
 	},
 
@@ -894,8 +930,16 @@ var game =
 		{
 			game.spawn();
 			game.hero.run();
+			game.killed();
 
 			game.set.background();
+
+			/* hero left-up corner */
+			game.button.avatar.show(game.data.canvas.s64, game.data.canvas.s64, game.data.canvas.s8, game.data.canvas.s8);
+			if(game.event.tick)
+			{
+				game.print(game.hero.level + ' ур', game.data.canvas.s64, game.data.canvas.s32 + game.data.canvas.s8, 'left', game.data.canvas.s32,'#fff', undefined, true);
+			};
 
 			game.button.chest.show(game.data.canvas.w2 + game.data.canvas.w8 - game.data.canvas.s16, game.data.canvas.h1 - game.data.canvas.s8, game.data.canvas.s8, game.data.canvas.s8);
 
